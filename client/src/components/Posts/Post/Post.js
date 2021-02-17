@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {useState, useEffect} from "react"
 import {useDispatch} from "react-redux"
-import {deletePost} from "../../../store/actions/posts"
+import {deletePost, likePost} from "../../../store/actions/posts"
 
 import moment from "moment"
 import {Card, CardActions, CardContent, CardMedia, Button, Typography} from "@material-ui/core"
@@ -10,11 +10,24 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import useStyles from "./styles"
 
 const Post = ({post, setCurrentId}) => {
+    const [isLiked, setIsLiked] = useState(false)
+    const [likeCount, setLikeCount] = useState(0)
+
+    useEffect(() => {
+        setLikeCount(post.likeCount)
+    }, [post.likeCount])
+
     const classes = useStyles()
     const dispatch = useDispatch()
 
     const handleDelete = id => {
         dispatch(deletePost(id))
+    }
+
+    const handleLike = () => {
+        setLikeCount(likeCount + 1)
+        setIsLiked(true)
+        dispatch(likePost(post._id))
     }
 
     return (
@@ -35,7 +48,7 @@ const Post = ({post, setCurrentId}) => {
                 <Typography variant="body2" color="textSecondary" component="p">{post.message}</Typography>
             </CardContent>
             <CardActions className={classes.cardActions}>
-                <Button size="small" color="primary" onClick={() => {}}><ThumbUpAltIcon fontSize="small" /> Like {post.likeCount} </Button>
+                <Button disabled={isLiked} size="small" color="primary" onClick={() => handleLike()}><ThumbUpAltIcon fontSize="small" /> Like {likeCount} </Button>
                 <Button size="small" color="primary" onClick={() => handleDelete(post._id)}><DeleteIcon fontSize="small" /> Delete</Button>
             </CardActions>
         </Card>
